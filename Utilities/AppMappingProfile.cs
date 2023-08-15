@@ -19,7 +19,9 @@ namespace IpDeputyApi.Utilities
             CreateMap<Subgroup, SubgroupDto>().ReverseMap();
             CreateMap<Subject, SubjectDto>().ReverseMap();
             CreateMap<SubjectType, SubjectTypeDto>().ReverseMap();
-            CreateMap<SubmissionsConfig, SubmissionsConfigDto>().ReverseMap();
+            CreateMap<SubmissionsConfig, SubmissionsConfigDto>().ReverseMap()
+                .ForMember(x => x.SubmissionWorks, opt => opt.Ignore())
+                .ForMember(x => x.SubmissionStudents, opt => opt.Ignore());
             CreateMap<SubmissionStudent, SubmissionStudentDto>().ReverseMap();
             CreateMap<SubmissionWork, SubmissionWorkDto>().ReverseMap();
             CreateMap<Teacher, TeacherDto>().ReverseMap();

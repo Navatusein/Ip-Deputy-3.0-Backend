@@ -11,7 +11,7 @@ using ILogger = Serilog.ILogger;
 namespace IpDeputyApi.Controllers.Frontend;
 
 [Tags("Frontend CouplesController")]
-[Route("api/frontend/")]
+[Route("api/frontend/couple")]
 [ApiController]
 public class CouplesController : ControllerBase
 {
@@ -33,8 +33,7 @@ public class CouplesController : ControllerBase
 
         var models = await _context.Couples
             .Where(x => x.DayOfWeekId == dayOfWeekId)
-            .OrderBy(x => x.DayOfWeekId)
-            .ThenBy(x => x.CoupleTimeId)
+            .OrderBy(x => x.CoupleTimeId)
             .ThenBy(x => x.StartDate)
             .ToListAsync();
 
@@ -113,14 +112,18 @@ public class CouplesController : ControllerBase
         var model = _mapper.Map<Couple>(dto);
 
         _context.Update(model);
-        _context.RemoveRange(await _context.CoupleDates.Where(x => x.CoupleId == dto.Id).ToListAsync());
         await _context.SaveChangesAsync();
 
+        _context.RemoveRange(await _context.CoupleDates.Where(x => x.CoupleId == dto.Id).ToListAsync());
+        
         await _context.AddRangeAsync(dto.AdditionalDates
             .Select(x => _mapper.Map<CoupleDate>(x, opt =>
             {
-                opt.AfterMap((_, dest) => dest.CoupleId = model.Id);
-                opt.AfterMap((_, dest) => dest.IsRemovedDate = false);
+                opt.AfterMap((_, dest) =>
+                {
+                    dest.CoupleId = dto.Id;
+                    dest.IsRemovedDate = false;
+                });
             }))
             .ToList()
         );
@@ -128,8 +131,11 @@ public class CouplesController : ControllerBase
         await _context.AddRangeAsync(dto.RemovedDates
             .Select(x => _mapper.Map<CoupleDate>(x, opt =>
             {
-                opt.AfterMap((_, dest) => dest.CoupleId = model.Id);
-                opt.AfterMap((_, dest) => dest.IsRemovedDate = true);
+                opt.AfterMap((_, dest) =>
+                {
+                    dest.CoupleId = dto.Id;
+                    dest.IsRemovedDate = true;
+                });
             }))
             .ToList()
         );

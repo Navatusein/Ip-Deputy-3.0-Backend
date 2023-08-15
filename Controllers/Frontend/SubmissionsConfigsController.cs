@@ -11,7 +11,7 @@ using ILogger = Serilog.ILogger;
 namespace IpDeputyApi.Controllers.Frontend;
 
 [Tags("Frontend SubmissionsConfigs Controller")]
-[Route("api/frontend/submission-config")]
+[Route("api/frontend/submissions-config")]
 [ApiController]
 public class SubmissionsConfigsController : ControllerBase
 {
