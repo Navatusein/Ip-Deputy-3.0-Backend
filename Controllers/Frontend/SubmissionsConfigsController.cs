@@ -27,25 +27,37 @@ public class SubmissionsConfigsController : ControllerBase
 
     [Authorize]
     [HttpGet]
+    [Route("for-student")]
+    public async Task<ActionResult<List<SubmissionsConfigDto>>> GetForStudent(int studentId)
+    {
+        Logger.Debug("GetForStudent Get(studentId: {studentId})", studentId);
+
+        var student = await _context.Students.FirstOrDefaultAsync(x => x.Id == studentId);
+        
+        if (student == null)
+        {
+            Logger.Debug("Error GetForStudent: No such studentId");
+            return BadRequest("No such studentId");
+        }
+        
+        var dtos = await _context.SubmissionsConfigs
+            .Where(x => x.SubgroupId == null || x.SubgroupId == student.SubgroupId)
+            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
+            .ToListAsync();
+        
+        Logger.Debug("GetForStudent Get(dtos: {@dtos})", dtos);
+        return Ok(dtos);
+    }
+    
+    [Authorize]
+    [HttpGet]
     public async Task<ActionResult<List<SubmissionsConfigDto>>> Get()
     {
         Logger.Debug("Start Get()");
-
-        var models = await _context.SubmissionsConfigs
-            .ToListAsync();
-
-        var dtos = new List<SubmissionsConfigDto>();
         
-        foreach (var submissionsConfig in models)
-        {
-            var dto = _mapper.Map<SubmissionsConfigDto>(submissionsConfig);
-            
-            dto.SubmissionWorks = submissionsConfig.SubmissionWorks
-                .Select(x => _mapper.Map<SubmissionWorkDto>(x))
-                .ToList();
-            
-            dtos.Add(dto);
-        }
+        var dtos = await _context.SubmissionsConfigs
+            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
+            .ToListAsync();
         
         Logger.Debug("Result Get(dtos: {@dtos})", dtos);
         return Ok(dtos);
@@ -62,8 +74,10 @@ public class SubmissionsConfigsController : ControllerBase
         await _context.AddAsync(model);
         await _context.SaveChangesAsync();
 
-        dto.Id = model.Id;
+        dto = _mapper.Map<SubmissionsConfigDto>(model);
 
+        await _context.SaveChangesAsync();
+        
         Logger.Debug("Result Add(dto: {@dto})", dto);
         return Ok(dto);
     }
@@ -85,16 +99,6 @@ public class SubmissionsConfigsController : ControllerBase
         _context.Update(model);
         await _context.SaveChangesAsync();
 
-        await _context.AddRangeAsync(dto.SubmissionWorks
-            .Select(x => _mapper.Map<SubmissionWork>(x, opt =>
-            {
-                opt.AfterMap((_, dest) => dest.SubmissionConfigId = model.Id);
-            }))
-            .ToList()
-        );
-        
-        await _context.SaveChangesAsync();
-        
         Logger.Debug("Result Update(dto: {@dto})", dto);
         return Ok(dto);
     }

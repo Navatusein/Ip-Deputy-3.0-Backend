@@ -52,7 +52,7 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+        Description = "Put JWT Bearer token on textbox below!",
 
         Reference = new OpenApiReference
         {
@@ -104,7 +104,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Configure Bot Authentication Service
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddScheme<BotAuthenticationSchemeOptions, BotAuthenticationHandler>(
-        BotAuthenticationSchemeOptions.DefaultScemeName,
+        BotAuthenticationSchemeOptions.DefaultSchemeName,
         options =>
         {
             options.BotToken = builder.Configuration["BotAuthorizeToken"];

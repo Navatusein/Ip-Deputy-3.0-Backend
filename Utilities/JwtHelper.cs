@@ -9,7 +9,7 @@ namespace IpDeputyApi.Utilities
 {
     public class JwtHelper
     {
-        private static Serilog.ILogger _logger => Serilog.Log.ForContext<JwtHelper>();
+        private static Serilog.ILogger Logger => Serilog.Log.ForContext<JwtHelper>();
         private readonly IConfiguration _config;
 
         public JwtHelper(IConfiguration config)
@@ -17,7 +17,59 @@ namespace IpDeputyApi.Utilities
             _config = config;
         }
 
-        public string GetAuthorizeJwt(int studentId, bool refresh = true)
+        public UserDto GetFrontendUserDto(Student student, out string refreshToken, bool refresh = true)
+        {
+            UserDto userDto = new()
+            {
+                StudentId = student.Id,
+                UserName = student.Name,
+                JwtToken = GetAuthorizeJwt(student.Id, refresh),
+            };
+
+            if (refresh) 
+                refreshToken = GetRefreshJwt(student.Id);
+            
+            refreshToken = "";
+            return userDto;
+        }
+
+        public bool ValidateRefreshJwt(string token, int studentId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _config["FrontendRefreshJWT:Issuer"],
+                ValidAudience = _config["FrontendRefreshJWT:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["FrontendRefreshJWT:Key"]!))
+            };
+
+            if (!tokenHandler.CanReadToken(token)) 
+                return false;
+            
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+
+                if (principal.HasClaim(c => c.Type == "id"))
+                {
+                    var id = Convert.ToInt32(principal.Claims.First(c => c.Type == "id").Value);
+                    return studentId == id;
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error("Jwt error: @1", exception);
+            }
+
+            return false;
+        }
+        
+        private string GetAuthorizeJwt(int studentId, bool refresh = true)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["FrontendAuthorizeJWT:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -36,21 +88,8 @@ namespace IpDeputyApi.Utilities
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public UserDto GetFrontendUserDto(Student student, out string refreshToken)
-        {
-            UserDto userDto = new()
-            {
-                StudentId = student.Id,
-                UserName = student.Name,
-                JwtToken = GetAuthorizeJwt(student.Id),
-            };
-
-            refreshToken = GetRefreshJwt(student.Id);
-
-            return userDto;
-        }
-
-        public string GetRefreshJwt(int studentId)
+        
+        private string GetRefreshJwt(int studentId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["FrontendRefreshJWT:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -68,43 +107,6 @@ namespace IpDeputyApi.Utilities
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public bool ValidateRefreshJwt(string token, int studentId)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _config["FrontendRefreshJWT:Issuer"],
-                ValidAudience = _config["FrontendRefreshJWT:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["FrontendRefreshJWT:Key"]!))
-            };
-
-            if (tokenHandler.CanReadToken(token))
-            {
-                try
-                {
-                    ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-
-                    if (principal.HasClaim(c => c.Type == "id"))
-                    {
-                        int id = Convert.ToInt32(principal.Claims.Where(c => c.Type == "id").First().Value);
-
-                        return studentId == id;
-                    }
-                }
-                catch (Exception exception)
-                {
-                    _logger.Error("Jwt error: @1", exception);
-                }
-            }
-
-            return false;
         }
     }
 }

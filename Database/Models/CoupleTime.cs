@@ -8,5 +8,10 @@
         public TimeOnly TimeEnd { get; set; }
 
         public virtual IEnumerable<Couple> Couples { get; } = new List<Couple>();
+
+        public string GetTimeFormatted()
+        {
+            return $"{TimeStart.ToString("HH:mm")} - {TimeEnd.ToString("HH:mm")}";
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace IpDeputyApi.Controllers.Frontend
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             Logger.Debug("Start Login(loginDto: {@loginDto})", loginDto);
-            WebAuthentication? webAdminAuth = await _context.WebAuthentications
+            var webAdminAuth = await _context.WebAuthentications
                 .Where(x => x.Login == loginDto.Login.ToLower())
                 .FirstOrDefaultAsync();
 
@@ -48,10 +48,8 @@ namespace IpDeputyApi.Controllers.Frontend
                 Logger.Debug("Error Login: Invalid password");
                 return BadRequest("Invalid user login or password");
             }
-                
-            Student student = webAdminAuth.Student;
-
-            UserDto userDto = _jwtHelper.GetFrontendUserDto(student, out var refreshToken);
+            
+            var userDto = _jwtHelper.GetFrontendUserDto(webAdminAuth.Student, out var refreshToken);
 
             var cookieOptions = new CookieOptions
             {
@@ -64,6 +62,27 @@ namespace IpDeputyApi.Controllers.Frontend
             Response.Cookies.Append(CookieKey, refreshToken, cookieOptions);
 
             Logger.Debug("Result Login(userDto: {@userDto} refreshToken: {@refreshToken})", userDto, refreshToken);
+            return Ok(userDto);
+        }
+        
+        [AllowAnonymous]
+        [Route("login-bot")]
+        [HttpPost]
+        public async Task<ActionResult<UserDto>> LoginBot(int telegramId)
+        {
+            Logger.Debug("Start LoginBot(telegramId: {@telegramId})", telegramId);
+
+            var telegram = await _context.Telegrams.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+            
+            if (telegram == null)
+            {
+                Logger.Debug("Error LoginBot: telegram Is Null");
+                return BadRequest("Not authorized student");
+            }
+
+            var userDto = _jwtHelper.GetFrontendUserDto(telegram.Student, out var refreshToken);
+
+            Logger.Debug("Result LoginBot(userDto: {@userDto})", userDto);
             return Ok(userDto);
         }
 

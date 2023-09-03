@@ -25,8 +25,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dto\Bot\" />
-  </ItemGroup>
-
 </Project>

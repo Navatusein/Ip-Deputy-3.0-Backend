@@ -1,8 +1,7 @@
-﻿namespace IpDeputyApi.Dto.Frontend;
+﻿namespace IpDeputyApi.Dto.Bot;
 
-public class LinkDto
+public class LinkInformationDto
 {
-    public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string Url { get; set; } = null!;

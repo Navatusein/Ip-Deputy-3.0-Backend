@@ -3,7 +3,7 @@
     public class SubmissionWork
     {
         public int Id { get; set; }
-        public int SubmissionConfigId { get; set; }
+        public int SubmissionsConfigId { get; set; }
         public string Name { get; set; } = null!;
 
         public virtual SubmissionsConfig SubmissionsConfig { get; set; } = null!;

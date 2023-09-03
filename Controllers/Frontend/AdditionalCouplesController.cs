@@ -35,7 +35,7 @@ public class AdditionalCouplesController : ControllerBase
             .Select(x => _mapper.Map<AdditionalCoupleDto>(x))
             .ToListAsync();
 
-        Logger.Debug("Result Get dtos: {@dtos}", dtos);
+        Logger.Debug("Result Get(dtos: {@dtos})", dtos);
         return Ok(dtos);
     }
 
