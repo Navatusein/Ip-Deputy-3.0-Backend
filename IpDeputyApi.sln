@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IpDeputyApi", "IpDeputyApi.csproj", "{775910B4-C278-4C59-899A-B8CCC176153C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{775910B4-C278-4C59-899A-B8CCC176153C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775910B4-C278-4C59-899A-B8CCC176153C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775910B4-C278-4C59-899A-B8CCC176153C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775910B4-C278-4C59-899A-B8CCC176153C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18A7B1C3-5D4F-4261-901E-7B75D6A17DB2}
+	EndGlobalSection
+EndGlobal
