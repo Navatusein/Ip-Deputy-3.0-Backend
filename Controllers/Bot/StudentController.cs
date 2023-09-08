@@ -77,11 +77,11 @@ public class StudentController : ControllerBase
 
         if (telegram == null)
         {
-            Logger.Debug("Error UpdateSettings: No such student");
-            return BadRequest();
+            Logger.Debug("Error UpdateLastActivity: No such student");
+            return NoContent();
         }
 
-        telegram.LastActivity = DateTime.Now;
+        telegram.LastActivity = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
         

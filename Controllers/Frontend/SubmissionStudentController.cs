@@ -40,12 +40,10 @@ public class SubmissionStudentController : ControllerBase
         Logger.Debug("Result GetByStudent(dtos: {@dtos})", dtos);
         return Ok(dtos);
     }
-
-    [Authorize]
-    [HttpPost]
     
     [Authorize]
     [HttpGet]
+    [Route("by-student")]
     public async Task<ActionResult<List<SubmissionStudentDto>>> GetByStudent(int studentId)
     {
         Logger.Debug("Start GetByStudent(studentId: {studentId})", studentId);
