@@ -81,6 +81,9 @@ builder.Services.AddDbContextPool<IpDeputyDbContext>(options =>
         case "Sqlite":
             options.UseSqlite(builder.Configuration["Database:ConnectionString"]);
             break;
+        case "PostgreSQL":
+            options.UseNpgsql(builder.Configuration["Database:ConnectionString"]);
+            break;
         default:
             break;
     }

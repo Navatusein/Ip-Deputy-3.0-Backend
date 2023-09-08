@@ -35,10 +35,13 @@ public class InformationController : ControllerBase
     {
         Logger.Debug("Start GetStudentsInformation()");
 
-        var studentInformationDtos = await _context.Students
+        var students = await _context.Students
             .OrderBy(x => x.Index)
-            .Select(x => _mapper.Map<StudentInformationDto>(x))
             .ToListAsync();
+
+        var studentInformationDtos = students
+            .Select(x => _mapper.Map<StudentInformationDto>(x))
+            .ToList();
 
         Logger.Debug("Result GetStudentsInformation(studentInformationDtos: {@studentInformationDtos})",
             studentInformationDtos);
@@ -52,11 +55,14 @@ public class InformationController : ControllerBase
     {
         Logger.Debug("Start GetTeachersInformation()");
 
-        var teacherInformationDtos = await _context.Teachers
+        var teachers = await _context.Teachers
             .OrderBy(x => x.Surname)
-            .Select(x => _mapper.Map<TeacherInformationDto>(x))
             .ToListAsync();
 
+        var teacherInformationDtos = teachers
+            .Select(x => _mapper.Map<TeacherInformationDto>(x))
+            .ToList();
+        
         Logger.Debug("Result GetTeachersInformation(teacherInformationDtos: {@teacherInformationDtos})",
             teacherInformationDtos);
         return Ok(teacherInformationDtos);

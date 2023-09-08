@@ -43,10 +43,10 @@ public class StudentController : ControllerBase
     
     [Authorize(AuthenticationSchemes = BotAuthenticationSchemeOptions.DefaultSchemeName)]
     [Route("settings")]
-    [HttpPost]
+    [HttpPut]
     public async Task<ActionResult<StudentSettingsDto>> UpdateSettings(StudentSettingsDto settingsDto)
     {
-        Logger.Debug("Start UpdateSettings(telegramId:{@settingsDto})", settingsDto);
+        Logger.Debug("Start UpdateSettings(settingsDto:{@settingsDto})", settingsDto);
 
         var telegram = await _context.Telegrams.FirstOrDefaultAsync(x => x.TelegramId == settingsDto.TelegramId);
 
@@ -64,5 +64,28 @@ public class StudentController : ControllerBase
         
         Logger.Debug("Result UpdateSettings(settings: {@settingsDto})", settingsDto);
         return Ok(settingsDto);
+    }
+    
+    [Authorize(AuthenticationSchemes = BotAuthenticationSchemeOptions.DefaultSchemeName)]
+    [Route("last-activity")]
+    [HttpPut]
+    public async Task<ActionResult<StudentSettingsDto>> UpdateLastActivity(int telegramId)
+    {
+        Logger.Debug("Start UpdateLastActivity(telegramId:{@telegramId})", telegramId);
+
+        var telegram = await _context.Telegrams.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
+
+        if (telegram == null)
+        {
+            Logger.Debug("Error UpdateSettings: No such student");
+            return BadRequest();
+        }
+
+        telegram.LastActivity = DateTime.Now;
+
+        await _context.SaveChangesAsync();
+        
+        Logger.Debug("Result UpdateLastActivity()");
+        return Ok();
     }
 }

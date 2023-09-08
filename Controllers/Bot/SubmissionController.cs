@@ -29,7 +29,7 @@ public class SubmissionController : ControllerBase
     [Authorize(AuthenticationSchemes = BotAuthenticationSchemeOptions.DefaultSchemeName)]
     [Route("submissions-configs")]
     [HttpGet]
-    public async Task<ActionResult<List<SubmissionsConfigDataDto>>> GetSubmissionsConfigss()
+    public async Task<ActionResult<List<SubmissionsConfigDataDto>>> GetSubmissionsConfigs()
     {
         Logger.Debug("Start GetSubmissionsConfigs()");
         var submissionsConfigs = await _context.SubmissionsConfigs.ToListAsync();
@@ -42,7 +42,7 @@ public class SubmissionController : ControllerBase
             {
                 Id = submissionsConfig.Id,
                 Name = submissionsConfig.CustomName ?? submissionsConfig.Subject!.ShortName,
-                Type = submissionsConfig.CustomType ?? submissionsConfig.SubjectType!.Name,
+                Type = submissionsConfig.CustomType ?? submissionsConfig.SubjectType!.ShortName,
                 Subgroup = submissionsConfig.Subgroup?.Name,
                 Submissions = submissionsConfig.SubmissionStudents
                     .OrderBy(x => x.PreferredPosition)

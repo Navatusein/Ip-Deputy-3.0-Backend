@@ -40,10 +40,13 @@ public class SubmissionsConfigsController : ControllerBase
             return BadRequest("No such studentId");
         }
         
-        var dtos = await _context.SubmissionsConfigs
+        var models = await _context.SubmissionsConfigs
             .Where(x => x.SubgroupId == null || x.SubgroupId == student.SubgroupId)
-            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
             .ToListAsync();
+
+        var dtos = models
+            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
+            .ToList();
         
         Logger.Debug("GetForStudent Get(dtos: {@dtos})", dtos);
         return Ok(dtos);
@@ -55,9 +58,12 @@ public class SubmissionsConfigsController : ControllerBase
     {
         Logger.Debug("Start Get()");
         
-        var dtos = await _context.SubmissionsConfigs
-            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
+        var models = await _context.SubmissionsConfigs
             .ToListAsync();
+
+        var dtos = models
+            .Select(x => _mapper.Map<SubmissionsConfigDto>(x))
+            .ToList();
         
         Logger.Debug("Result Get(dtos: {@dtos})", dtos);
         return Ok(dtos);

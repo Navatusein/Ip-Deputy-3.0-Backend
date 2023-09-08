@@ -26,10 +26,11 @@ namespace IpDeputyApi.Utilities
                 JwtToken = GetAuthorizeJwt(student.Id, refresh),
             };
 
+            refreshToken = "";
+            
             if (refresh) 
                 refreshToken = GetRefreshJwt(student.Id);
             
-            refreshToken = "";
             return userDto;
         }
 

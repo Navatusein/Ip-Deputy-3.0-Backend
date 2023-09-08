@@ -107,7 +107,10 @@ public class ScheduleController : ControllerBase
         if (couple.CoupleDates.Any(x => x.IsRemovedDate && x.Date == date))
             return false;
 
-        if (!(date >= couple.StartDate) || !(date <= couple.EndDate))
+        if (couple.StartDate == null)
+            return false;
+        
+        if (date < couple.StartDate || date > couple.EndDate)
             return false;
         
         var startDate = couple.StartDate.Value.ToDateTime(new TimeOnly());
@@ -128,6 +131,8 @@ public class ScheduleController : ControllerBase
             .OrderBy(x => x.CoupleTime.Index)
             .ToListAsync();
 
+        couples = couples.Where(x => FilterCouples(x, date)).ToList(); 
+        
         var coupleDataDtos = couples.Select(couple => new CoupleDataDto
         {
             Subject = couple.Subject.ShortName,

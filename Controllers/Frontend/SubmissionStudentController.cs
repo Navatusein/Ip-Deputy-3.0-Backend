@@ -27,6 +27,25 @@ public class SubmissionStudentController : ControllerBase
 
     [Authorize]
     [HttpGet]
+    public async Task<ActionResult<List<SubmissionStudentDto>>> Get()
+    {
+        Logger.Debug("Start Get()");
+
+        var dtos = await _context.SubmissionStudents
+            .OrderBy(x => x.SubmissionsConfigId)
+            .ThenBy(x => x.SubmissionWork.Name)
+            .Select(x => _mapper.Map<SubmissionStudentDto>(x))
+            .ToListAsync();
+
+        Logger.Debug("Result GetByStudent(dtos: {@dtos})", dtos);
+        return Ok(dtos);
+    }
+
+    [Authorize]
+    [HttpPost]
+    
+    [Authorize]
+    [HttpGet]
     public async Task<ActionResult<List<SubmissionStudentDto>>> GetByStudent(int studentId)
     {
         Logger.Debug("Start GetByStudent(studentId: {studentId})", studentId);
